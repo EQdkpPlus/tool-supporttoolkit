@@ -59,7 +59,7 @@ class repair extends step_generic {
 			$blnRepairStatus = '-';
 			if ($arrResult['Msg_text'] != "OK"){
 				$arrRepairResult = $this->db->query("REPAIR TABLE ".$name, true);
-				if ($arrRepairResult['Msg_text'] != "OK") $blnRepairStatus = $ok;
+				if ($arrRepairResult['Msg_text'] == "OK") $blnRepairStatus = $ok;
 			}
 				
 			$content .= '<tr>

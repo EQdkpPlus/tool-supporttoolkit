@@ -257,7 +257,9 @@ class supporttool extends gen_class {
 	}
 	
 	private function show() {
-		if(class_exists($this->current_step)) $_step = registry::register($this->current_step);
+		if(class_exists($this->current_step)) {
+			$_step = registry::register($this->current_step);
+		}
 		$this->progress = round(100*(count($this->done)/count($this->order)), 0);
 		$content = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

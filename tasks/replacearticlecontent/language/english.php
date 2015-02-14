@@ -1,5 +1,5 @@
 <?php
-/*	Project:	EQdkp-Plus
+ /*	Project:	EQdkp-Plus
  *	Package:	EQdkp-plus Supportool
  *	Link:		http://eqdkp-plus.eu
  *
@@ -29,10 +29,13 @@ if (!defined('EQDKP_INC')) {
 //Source-Language: german_2.0
 
 $lang = array( 
-	"renameconfigtable"	=> "Rename Configtable",
-	"renameconfigtable_text" => "This Task will rename the _backup_cnf Table to _config.",
-	"repair"		=> "Rename Configtable",
-	"renameconfigtable_finished" => "Rename finished.",
+	"replacearticlecontent"	=> "Replace Articlecontent",
+	"replacearticlecontent_text" => "This Task will searches for a string and replaces it in all articles.",
+	"replace"		=> "Search & Replace in Articles",
+	"search_string"		=> "Search String",
+	"replace_string"		=> "Replace String",
+	"replace_finished"		=> "Replacement finished.",
+	"search_empty"		=> "Your search Value is empty.",
 );
 
 ?>

@@ -29,10 +29,13 @@ if (!defined('EQDKP_INC')) {
 //Source-Language: german_2.0
 
 $lang = array( 
-	"renameconfigtable"	=> "Rename Configtable",
-	"renameconfigtable_text" => "This Task will rename the _backup_cnf Table to _config.",
-	"repair"		=> "Rename Configtable",
-	"renameconfigtable_finished" => "Rename finished.",
+	"replacearticlecontent"	=> "Ersetze Artikelinhalt",
+	"replacearticlecontent_text" => "Diese Aufgabe ersetzt den eingegebenen Suchstring durch deine Ersetzung. Kann z.B. nach Umzügen verwendet werden.",
+	"replace"				=> "Suchen & Ersetzen in Artikeln",
+	"search_string"			=> "Suche nach",
+	"replace_string"		=> "Ersetze durch",
+	"replace_finished"		=> "Ersetzung beendet.",
+	"search_empty"			=> "Dein Suchstring ist leer.",
 );
 
 ?>

@@ -29,12 +29,10 @@ if (!defined('EQDKP_INC')) {
 //Source-Language: german_2.0
 
 $lang = array( 
-	"tablerepair"	=> "Tabellen reparieren",
-	"tablerepair_text" => "Diese Aufgabe wird alle Datenbank-Tabellen reparieren, die als defekt markiert sind.",
-	"repair"		=> "Tabellen prüfen & reparieren",
-	"table_name"	=> "Tabelle",
-	"table_status"	=> "Status",
-	"table_repaired" => "Repariert",
+	"renameconfigtable"	=> "Configtabelle umbenennen",
+	"renameconfigtable_text" => "Dieser Task wird die Config Tabelle von _backup_cnf in _config umbenennen.",
+	"repair"		=> "Configtabelle umbenennen",
+	"renameconfigtable_finished" => "Umbenennung abgeschlossen.",
 );
 
 ?>

@@ -21,27 +21,43 @@
 if(!defined('EQDKP_INC')) {
 	header('HTTP/1.0 404 Not Found');exit;
 }
-class repair extends step_generic {
+class replace extends step_generic {
 	public $next_button = 'continue';
 	
 	private $content;
+	private $search;
+	private $replace;
 	
 	public function get_output() {
-		$strOut =  $this->lang['renameconfigtable_text'];
-	
-		return $strOut;
+		$content = $this->lang['replacearticlecontent_text'].'<br/>
+		<table width="100%" border="0" cellspacing="1" cellpadding="2" class="no-borders">
+			<tr>
+				<td align="right"><strong>'.$this->lang['search_string'].': </strong></td>
+				<td><input type="text" name="search" size="25" value="" class="input" /></td>
+			</tr>
+			<tr>
+				<td align="right"><strong>'.$this->lang['replace_string'].': </strong></td>
+				<td><input type="text" name="replace" size="25" value="" class="input" /></td>
+			</tr>
+		</table>';
+		return $content;
 	}
 	
 	public function get_filled_output() {
-		$strOut =  $this->lang['renameconfigtable_text'];
+		$strOut =  $this->lang['tablerepair_text'];
 	
 		return $strOut;
 	}
 	
 	public function parse_input() {
-		$this->db->query("RENAME TABLE `__backup_cnf` TO `__config`;");
-			
-		$content = $this->lang['renameconfigtable_finished'];
+		$search = $this->in->get('search');
+		$replace = $this->in->get('replace');
+		if($search == ""){
+			$content = $this->lang['search_empty'];
+		} else {
+			$this->db->prepare("UPDATE __articles SET text = REPLACE (text, ?, ?)")->execute($search, $replace);
+			$content = $this->lang['replace_finished'];
+		}
 
 		$this->pdl->log('install_text', $content);
 		return true;
