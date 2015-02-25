@@ -72,7 +72,7 @@ class data extends step_generic {
 			$a = $this->pfh->rename($this->root_path.'data/'.$this->in->get('datafolder').'/', $this->root_path.'data/'.md5($this->table_prefix.$this->dbname).'/');
 			
 			//Set server_path in config
-			$path = str_replace('movetool/', '', registry::register('environment')->server_path);
+			$path = str_replace('supporttool/', '', registry::register('environment')->server_path);
 			registry::register('config')->set('server_path', $path);
 		
 		} else {
