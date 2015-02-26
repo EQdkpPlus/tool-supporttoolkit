@@ -99,6 +99,7 @@ class db_access extends step_generic {
 		$error = array();
 		include_once($this->root_path.'libraries/dbal/dbal.class.php');
 		try {
+			if($this->dbtype === 'mysql') $this->dbtype == 'mysqli';
 			$db = dbal::factory(array('dbtype' => $this->dbtype));
 			$db->connect($this->dbhost, $this->dbname, $this->dbuser, $this->dbpass);
 		
