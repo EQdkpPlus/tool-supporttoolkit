@@ -42,17 +42,21 @@ class data extends step_generic {
 			<select size="10" name="datafolder">';
 		
 		$oldFolder = array();
+		$blnFoundSameFolder = false;
 		foreach($arrFolders as $dataFolder){
 			$file = $this->root_path.'data/'.$dataFolder;
 			if (is_dir($file) && $file != "." && $file != ".." && $file != "index.html" && $file != ".htaccess"){
 				if (is_file($file.'/eqdkp/config/localconf.php')){
-					if ($dataFolder == md5($this->table_prefix.$this->dbname)) continue;
+					if ($dataFolder == md5($this->table_prefix.$this->dbname)) {
+						$blnFoundSameFolder = true;
+						continue;
+					}
 					$oldFolder[$dataFolder] = $dataFolder;
 					$content .= '<option value="'.$dataFolder.'">'.$dataFolder.'</option>';
 				}
 			}
 		}	
-				
+		if($blnFoundSameFolder) $content .= '<input type="hidden" name="foundsamefolder" value="1" />';		
 		$content .= '	
 			</select>
 		</div>';
@@ -75,7 +79,7 @@ class data extends step_generic {
 			$path = str_replace('supporttool/', '', registry::register('environment')->server_path);
 			registry::register('config')->set('server_path', $path);
 		
-		} else {
+		} elseif(!$this->in->exists('foundsamefolder')) {
 			$this->pdl->log('install_error', $this->lang['datafolder_missing']);
 			return false;
 		}
