@@ -25,7 +25,7 @@ if(!defined('EQDKP_INC')) {
 
 class supporttool extends gen_class {	
 	
-	private $version = '0.1.1';
+	private $version = '0.1.2';
 
 	private $current_step	= 'start';
 	private $previous		= 'start';
