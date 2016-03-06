@@ -3,7 +3,7 @@
  *	Package:	EQdkp-plus Supportool
  *	Link:		http://eqdkp-plus.eu
  *
- *	Copyright (C) 2006-2015 EQdkp-Plus Developer Team
+ *	Copyright (C) 2006-2016 EQdkp-Plus Developer Team
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License as published
@@ -88,6 +88,17 @@ class php_check extends step_generic {
 				'installed'		=> (extension_loaded('json')) ? $this->lang['yes'] : $this->lang['no'],
 				'passfail'		=> (extension_loaded('json')) ? true : false
 			),
+			'gd'		=> array(
+					'required'		=> $this->lang['yes'],
+					'installed'		=> (extension_loaded('gd') && function_exists('gd_info')) ? $this->lang['yes'] : $this->lang['no'],
+					'passfail'		=> (extension_loaded('gd') && function_exists('gd_info')) ? true : false
+			),
+			//Check will be performed by javascript
+			'pathinfo'	=> array(
+					'required'		=> $this->lang['yes'],
+					'installed'		=> $this->lang['yes'],
+					'passfail'		=> true
+			),
 		);
 	}
 	
@@ -131,7 +142,16 @@ class php_check extends step_generic {
 			<i class="fa fa-exclamation-triangle fa-4x pull-left"></i> <strong>'.$this->lang['phpcheck_failed'].'</strong>
 		</div>';
 		} else {
-
+			//Check for Apache on Windows System, because of ThreadStackSize
+			//https://eqdkp-plus.eu/wiki/Versionsaktualisierung#EQdkp_Plus_2.1_l.C3.A4uft_nicht_mehr_auf_Windows-Servern
+			$output_array = array();
+			if(preg_match("/Apache\/(.*)\(Win(.*)\)/", $_SERVER['SERVER_SOFTWARE'], $output_array)){
+				$content .='<div class="infobox infobox-large infobox-red clearfix">
+			<i class="fa fa-exclamation-triangle fa-4x pull-left"></i> <strong>'.$this->lang['windows_apache_hint'].'</strong>
+		</div>';
+			}
+			
+			
 			// show a message if safemode is on, as we can install eqdkp+ with ftp handler
 			if(!$phpcheckdata['safemode']['passfail']){
 				$content .='<div style="margin-top: 10px; padding: 0pt 0.7em;" class="ui-state-highlight ui-corner-all">
@@ -185,6 +205,28 @@ class php_check extends step_generic {
 		}else{
 			$this->pdl->log('install_error', $this->lang['phpcheck_failed']);
 		}
+		
+		//JavaScript check pathinfo
+		$content .= '<script>$(document).ready(function(){
+			$.get( "index.php/pathinfotest", function( data ) {
+				if($.trim(data) != "/pathinfotest"){
+					pathinfotest_failed();
+				}
+			
+			}).fail(function() {
+			    pathinfotest_failed();
+			});
+		
+			function pathinfotest_failed(){
+				var myFirstColumn = $(".colorswitch tr:last td:nth-child(2)");
+				var myLastColum = $(".colorswitch tr:last td:nth-child(5)");
+				myFirstColumn.html("'.$this->lang['no'].'");
+				myFirstColumn.removeClass("positive");
+				myFirstColumn.addClass("negative");
+				myLastColum.html("<i class=\"fa fa-times-circle fa-2x negative\"></i>");
+				$(".buttonbar button[name=\"next\"]").hide();
+			}
+		})</script>';
 
 		return $content;
 	}

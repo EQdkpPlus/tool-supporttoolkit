@@ -3,7 +3,7 @@
  *	Package:	EQdkp-plus Supportool
  *	Link:		http://eqdkp-plus.eu
  *
- *	Copyright (C) 2006-2015 EQdkp-Plus Developer Team
+ *	Copyright (C) 2006-2016 EQdkp-Plus Developer Team
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License as published
@@ -129,8 +129,9 @@ $lang = array(
 	//Data folder
 	"data"	=> "Data-Ordner",
 	"datafolder_info" => "Bitte wähle den data-Ordner der alten Installation aus. Den Namen des alten data-Ordners kannst du in deinem alten EQdkp Plus erfahren, wenn du auf die Startseite des Adminbereiches gehst, und den \"Statistik\"-Tab auswählst. Ansonsten sollte hier in der Regel nur ein Ordner aufgelistet werden.",
-	"datafolder_missing" => "Please select the data-Folder of your old EQdkp Plus installation."
+	"datafolder_missing" => "Please select the data-Folder of your old EQdkp Plus installation.",
 	
+	'windows_apache_hint'	=> 'Du scheinst als Webserver Apache unter Windows zu verwenden. EQdkp Plus wird in diesem Fall nur funktionieren, wenn du die ThreadStackSize auf 8388608 in der Apache-Konfiguration erhöhst.',
 	
 	
 );

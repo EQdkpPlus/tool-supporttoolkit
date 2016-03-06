@@ -3,7 +3,7 @@
  *	Package:	EQdkp-plus Supportool
  *	Link:		http://eqdkp-plus.eu
  *
- *	Copyright (C) 2006-2015 EQdkp-Plus Developer Team
+ *	Copyright (C) 2006-2016 EQdkp-Plus Developer Team
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License as published
@@ -28,6 +28,13 @@ $eqdkp_root_path = './../';
 
 ini_set("display_errors", 0);
 define('DEBUG', 99);
+
+//Pathinfo check
+$path_info = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : (!empty($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : '');
+if($path_info != "" && strpos($path_info, '/pathinfotest') !== false){
+	echo filter_var($path_info, FILTER_SANITIZE_STRING);
+	die();
+}
 
 include_once($eqdkp_root_path.'core/super_registry.class.php');
 include_once($eqdkp_root_path.'core/registry.class.php');

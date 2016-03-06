@@ -3,7 +3,7 @@
  *	Package:	EQdkp-plus Supportool
  *	Link:		http://eqdkp-plus.eu
  *
- *	Copyright (C) 2006-2015 EQdkp-Plus Developer Team
+ *	Copyright (C) 2006-2016 EQdkp-Plus Developer Team
  *
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License as published
@@ -25,7 +25,7 @@ if(!defined('EQDKP_INC')) {
 
 class supporttool extends gen_class {	
 	
-	private $version = '0.1.2';
+	private $version = '0.1.3';
 
 	private $current_step	= 'start';
 	private $previous		= 'start';
@@ -50,11 +50,16 @@ class supporttool extends gen_class {
 		
 		$this->current_task = $this->in->get('current_task', '');
 		$this->current_step = $this->in->get('current_step', 'start');
-		
 		$this->data = ($this->in->exists('step_data')) ? unserialize(base64_decode($this->in->get('step_data'))) : array();
+
 		if($this->in->exists('next') && $this->current_step == 'end') $this->parse_end();
 		if($this->in->exists('install_done')) {
 			$this->done = (strpos($this->in->get('install_done'), ',') !== false) ? explode(',', $this->in->get('install_done')) : (($this->in->get('install_done') != '') ? array($this->in->get('install_done')) : array());
+		}
+		
+		if($this->current_step == 'start'){
+			$this->data = array();
+			$this->done = array();
 		}
 		
 		$this->init_language();
