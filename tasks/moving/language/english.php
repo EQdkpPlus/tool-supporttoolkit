@@ -141,7 +141,7 @@ $lang = array(
 	"data"	=> "Data-Folder",
 	"datafolder_info" => "Please select the data-Folder of your old installation. You can view the name of the old folder when inserting the Admin Panel of your old Installation and clicking on the 'Statistics'-Tab. Normally, in the following selectbox there should be only one Folder.",
 	"datafolder_missing" => "Please select the data-Folder of your old EQdkp Plus installation.",
-		
+	"datafolder_notrequired" => "No selection required.",
 	'windows_apache_hint'	=> 'It seems like you are using Apache under Windows as Webserver. EQdkp Plus will only work if you increase the ThreadStackSize to 8388608 at the Apache configuration file.',
 	
 	);

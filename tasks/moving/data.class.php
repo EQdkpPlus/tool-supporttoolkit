@@ -30,37 +30,47 @@ class data extends step_generic {
 	}
 
 	public function get_output() {
-		$dataFolder = $this->root_path.'data';
-		$arrFolders = scandir($dataFolder);
-		
-		$content = '
+		if(defined('INSTALLED_VERSION')){
+			$content = '
+		<div class="infobox infobox-large infobox-blue clearfix">
+			<i class="fa fa-info-circle fa-4x pull-left"></i>'.$this->lang['datafolder_notrequired'].'
+		</div>';
+			return $content;
+		} else {
+			$dataFolder = $this->root_path.'data';
+			$arrFolders = scandir($dataFolder);
+			
+			$content = '
 		<div class="infobox infobox-large infobox-blue clearfix">
 			<i class="fa fa-info-circle fa-4x pull-left"></i>'.$this->lang['datafolder_info'].'
 		</div>
-		
+					
 		<div>
 			<select size="10" name="datafolder">';
-		
-		$oldFolder = array();
-		$blnFoundSameFolder = false;
-		foreach($arrFolders as $dataFolder){
-			$file = $this->root_path.'data/'.$dataFolder;
-			if (is_dir($file) && $file != "." && $file != ".." && $file != "index.html" && $file != ".htaccess"){
-				if (is_file($file.'/eqdkp/config/localconf.php')){
-					if ($dataFolder == md5($this->table_prefix.$this->dbname)) {
-						$blnFoundSameFolder = true;
-						continue;
+			
+			$oldFolder = array();
+			$blnFoundSameFolder = false;
+			foreach($arrFolders as $dataFolder){
+				$file = $this->root_path.'data/'.$dataFolder;
+				if (is_dir($file) && $file != "." && $file != ".." && $file != "index.html" && $file != ".htaccess"){
+					if (is_file($file.'/eqdkp/config/localconf.php')){
+						if ($dataFolder == md5($this->table_prefix.$this->dbname)) {
+							$blnFoundSameFolder = true;
+							continue;
+						}
+						$oldFolder[$dataFolder] = $dataFolder;
+						$content .= '<option value="'.$dataFolder.'">'.$dataFolder.'</option>';
 					}
-					$oldFolder[$dataFolder] = $dataFolder;
-					$content .= '<option value="'.$dataFolder.'">'.$dataFolder.'</option>';
 				}
 			}
-		}	
-		if($blnFoundSameFolder) $content .= '<input type="hidden" name="foundsamefolder" value="1" />';		
-		$content .= '	
+			if($blnFoundSameFolder) $content .= '<input type="hidden" name="foundsamefolder" value="1" />';
+			$content .= '
 			</select>
 		</div>';
-		return $content;
+			return $content;
+			
+		}
+		
 	}
 
 	public function get_filled_output() {
@@ -68,6 +78,14 @@ class data extends step_generic {
 	}
 
 	public function parse_input() {
+		if(defined('INSTALLED_VERSION')){
+			//Set server_path in config
+			$path = str_replace('supporttool/', '', registry::register('environment')->server_path);
+			registry::register('config')->set('server_path', $path);
+			
+			return true;
+		}
+		
 		if (strlen($this->in->get('datafolder'))){
 		
 			//Rename Data Folder

@@ -39,8 +39,8 @@ class php_check extends step_generic {
 			),
 			'mysql'		=> array(
 				'required'		=> $this->lang['yes'],
-				'installed'		=> (extension_loaded('mysql')) ? $this->lang['yes'] : $this->lang['no'],
-				'passfail'		=> (extension_loaded('mysql')) ? true : false
+				'installed'		=> (extension_loaded('mysqli') || extension_loaded('pdo_mysql')) ? $this->lang['yes'] : $this->lang['no'],
+				'passfail'		=> (extension_loaded('mysqli') || extension_loaded('pdo_mysql')) ? true : false
 			),
 			'zLib'		=> array(
 				'required'		=> $this->lang['yes'],
@@ -92,6 +92,13 @@ class php_check extends step_generic {
 					'required'		=> $this->lang['yes'],
 					'installed'		=> (extension_loaded('gd') && function_exists('gd_info')) ? $this->lang['yes'] : $this->lang['no'],
 					'passfail'		=> (extension_loaded('gd') && function_exists('gd_info')) ? true : false
+			),
+			'mb'		=> array(
+				'required'		=> $this->lang['yes'],
+				'installed'		=> (function_exists('mb_strtolower')) ? $this->lang['yes'] : $this->lang['no'],
+				'passfail'		=> true,
+				'adviced_fail'	=> (!function_exists('mb_strtolower')) ? true : false,
+				'ignore'		=> true
 			),
 			//Check will be performed by javascript
 			'pathinfo'	=> array(
