@@ -203,10 +203,10 @@ class ftp_access extends step_generic {
 
 	private function configfile_content() {
 		$content = substr(file_get_contents($this->root_path.'config.php'), 0, -2); //discard last two symbols (? >)
-		$content = preg_replace('/^\$(ftphost) = \'(.*)\';$/m', "{{INSERT}}", $content);
+		$content = preg_replace('/\$(ftphost) = \'(.*)\';/m', "{{INSERT}}", $content);
 		
-		$content = preg_replace('/^\$(ftphost|ftpport|ftpuser|ftppass|ftproot) = \'(.*)\';$/m', "", $content);
-		$content = preg_replace('/^\$(use_ftp|ftpport) = (.*);$/m', "", $content);
+		$content = preg_replace('/\$(ftphost|ftpport|ftpuser|ftppass|ftproot) = \'(.*)\';/m', "", $content);
+		$content = preg_replace('/\$(use_ftp|ftpport) = (.*);/m', "", $content);
 		$content = preg_replace('/\\n{3,}/', "\n\n", $content);
 		
 		$c = '$ftphost = \''.$this->ftphost.'\';'."\n";
