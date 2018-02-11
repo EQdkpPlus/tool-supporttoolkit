@@ -25,7 +25,7 @@ if(!defined('EQDKP_INC')) {
 
 class supporttool extends gen_class {	
 	
-	private $version = '0.1.5';
+	private $version = '0.2.0';
 
 	private $current_step	= 'start';
 	private $previous		= 'start';
@@ -273,11 +273,9 @@ class supporttool extends gen_class {
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		
-		<link rel="stylesheet" type="text/css" media="screen" href="../libraries/jquery/core/core.min.css" />
 		<script type="text/javascript" language="javascript" src="../libraries/jquery/core/core.min.js"></script>
 		<link href="../libraries/FontAwesome/font-awesome.min.css" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" media="screen" href="style/install.css" />
-		<link rel="stylesheet" type="text/css" media="screen" href="style/jquery_tmpl.css" />
 		<script type="text/javascript">
 			//<![CDATA[
 		$(function() {
@@ -307,12 +305,18 @@ class supporttool extends gen_class {
 	</head>
 
 	<body>
+		<div id="handler">
 		<form action="index.php" method="post" id="form_install">
 		<div id="outerWrapper">
 			<div id="header">
-				<img src="style/logo.svg" id="logo" />
-				<div id="languageselect"><i class="fa fa-globe"></i> '.$this->lang['language'].': '.$this->lang_drop().'</div>
-				<div id="logotext">'.$this->lang['page_title'].'</div>
+				<div id="headerInner">
+					<div class="logoContainer">
+						<img src="style/logo.svg" id="logo" />
+						<div id="languageselect"><i class="fa fa-globe"></i> '.$this->lang['language'].': '.$this->lang_drop().'</div>
+						<div id="logotext">'.$this->lang['page_title'].'</div>
+						<div class="clear"></div>
+					</div>
+				</div>
 			</div>
 				
 		<div id="installer">
@@ -351,11 +355,12 @@ class supporttool extends gen_class {
 				</div>
 			</div>
 		</div>
-		<div id="footer">
-			<a href="http://eqdkp-plus.eu/">Version '.$this->version.' © 2006 - '.date('Y', time()).' by EQDKP Plus Development-Team</a>
-		</div>
 		</div>
 		</form>
+		<div id="footer">
+			<div><a href="http://eqdkp-plus.eu">'.$this->version.' © 2006 - '.date('Y', time()).' by EQDKP Plus Development-Team</a></div>
+		</div>
+		</div>
 	</body>
 </html>';
 		echo $content;

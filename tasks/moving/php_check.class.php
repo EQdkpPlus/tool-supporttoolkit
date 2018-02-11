@@ -1,6 +1,6 @@
 <?php
 /*	Project:	EQdkp-Plus
- *	Package:	EQdkp-plus Supportool
+ *	Package:	EQdkp-plus
  *	Link:		http://eqdkp-plus.eu
  *
  *	Copyright (C) 2006-2016 EQdkp-Plus Developer Team
@@ -18,6 +18,7 @@
  *	You should have received a copy of the GNU Affero General Public License
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 if(!defined('EQDKP_INC')) {
 	header('HTTP/1.0 404 Not Found');exit;
 }
@@ -42,24 +43,22 @@ class php_check extends step_generic {
 				'installed'		=> (extension_loaded('mysqli') || extension_loaded('pdo_mysql')) ? $this->lang['yes'] : $this->lang['no'],
 				'passfail'		=> (extension_loaded('mysqli') || extension_loaded('pdo_mysql')) ? true : false
 			),
+			'memory'	=> array(
+					'required'		=> REQ_PHP_MEMORY,
+					'installed'		=> (intval(ini_get('memory_limit')) == -1) ? "Unlimited" : ini_get('memory_limit'),
+					'passfail'		=> $this->check_php_limit(REQ_PHP_MEMORY),
+					'adviced_fail'	=> ($this->check_php_limit(REQ_PHP_MEMORY_REC) ? false :true),
+					'recommended'	=> REQ_PHP_MEMORY_REC,
+			),
 			'zLib'		=> array(
 				'required'		=> $this->lang['yes'],
 				'installed'		=> (extension_loaded('zlib')) ? $this->lang['yes'] : $this->lang['no'],
 				'passfail'		=> (extension_loaded('zlib')) ? true : false
 			),
-			'safemode'	=> array(
-				'required'		=> $this->lang['no'],
-				'installed'		=> (ini_get('safe_mode') != '1') ? $this->lang['no'] : $this->lang['yes'],
-				'passfail'		=> true,
-				'adviced_fail'	=> (ini_get('safe_mode') == '1') ? true : false,
-				'ignore'		=> true,
-			),
-			'memory'	=> array(
-				'required'		=> REQ_PHP_MEMORY,
-				'installed'		=> (intval(ini_get('memory_limit')) == -1) ? "Unlimited" : ini_get('memory_limit'),
-				'passfail'		=> $this->check_php_limit(REQ_PHP_MEMORY),
-				'adviced_fail'	=> ($this->check_php_limit(REQ_PHP_MEMORY_REC) ? false :true),
-				'recommended'	=> REQ_PHP_MEMORY_REC,
+			'ziparchive'		=> array(
+				'required'		=> $this->lang['yes'],
+				'installed'		=> (class_exists('ZipArchive')) ? $this->lang['yes'] : $this->lang['no'],
+				'passfail'		=> (class_exists('ZipArchive')) ? true : false
 			),
 			'curl'		=> array(
 				'required'		=> $this->lang['yes'],
@@ -78,6 +77,11 @@ class php_check extends step_generic {
 				'installed'		=> (function_exists('hash')) ? $this->lang['yes'] : $this->lang['no'],
 				'passfail'		=> (function_exists('hash')) ? true : false
 			),
+			'xml'	=> array(
+				'required'		=> $this->lang['yes'],
+				'installed'		=> (function_exists('simplexml_load_string')) ? $this->lang['yes'] : $this->lang['no'],
+				'passfail'		=> (function_exists('simplexml_load_string')) ? true : false
+			),
 			'autoload'	=> array(
 				'required'		=> $this->lang['yes'],
 				'installed'		=> (function_exists('spl_autoload_register')) ? $this->lang['yes'] : $this->lang['no'],
@@ -89,9 +93,9 @@ class php_check extends step_generic {
 				'passfail'		=> (extension_loaded('json')) ? true : false
 			),
 			'gd'		=> array(
-					'required'		=> $this->lang['yes'],
-					'installed'		=> (extension_loaded('gd') && function_exists('gd_info')) ? $this->lang['yes'] : $this->lang['no'],
-					'passfail'		=> (extension_loaded('gd') && function_exists('gd_info')) ? true : false
+				'required'		=> $this->lang['yes'],
+				'installed'		=> (extension_loaded('gd') && function_exists('gd_info')) ? $this->lang['yes'] : $this->lang['no'],
+				'passfail'		=> (extension_loaded('gd') && function_exists('gd_info')) ? true : false
 			),
 			'mb'		=> array(
 				'required'		=> $this->lang['yes'],
@@ -102,19 +106,48 @@ class php_check extends step_generic {
 			),
 			//Check will be performed by javascript
 			'pathinfo'	=> array(
-					'required'		=> $this->lang['yes'],
-					'installed'		=> $this->lang['yes'],
-					'passfail'		=> true
+				'required'		=> $this->lang['yes'],
+				'installed'		=> $this->lang['yes'],
+				'passfail'		=> true
 			),
+			'externalconnection' => array(
+				'required'		=> $this->lang['yes'],
+				'installed'		=> ($this->check_external_connection()) ? $this->lang['yes']: $this->lang['no'],
+				'ignore'		=> true,
+				'passfail'		=> true,
+				'adviced_fail'	=> (!$this->check_external_connection()),
+			)
 		);
 	}
 	
+	private $checkStatus = null;
+	
+	private function check_external_connection(){
+		$strCheckURL = EQDKP_CONNECTION_CHECK_URL;
+
+		if($this->checkStatus == NULL){
+			$objUrlfetcher = registry::register('urlfetcher');
+			$mixResult = $objUrlfetcher->fetch($strCheckURL);
+			
+			if($mixResult == "ok"){
+				$this->checkStatus = true;
+			} else {
+				$this->checkStatus = false;
+			}
+			
+			return $this->checkStatus;
+			
+		} else {
+			return $this->checkStatus;
+		}
+	}
+
 	private function check_php_limit($needed){
 		$installed = ini_get('memory_limit');
 		if (intval($installed) == -1) return true;
 		return ($this->convert_hr_to_bytes($installed) >= $this->convert_hr_to_bytes($needed)) ? true : false;
 	}
-	
+
 	function convert_hr_to_bytes( $size ) {
 		( $bytes = (float) $size )
 		&& ( $last = strtolower( substr( $size, -1 ) ) )
@@ -143,29 +176,21 @@ class php_check extends step_generic {
 	public function get_output() {
 		$content = '';
 		$phpcheckdata	= $this->getCheckParams();
-		
+
+		//Check for Apache on Windows System, because of ThreadStackSize
+		//https://eqdkp-plus.eu/wiki/Versionsaktualisierung#EQdkp_Plus_2.1_l.C3.A4uft_nicht_mehr_auf_Windows-Servern
+		$output_array = array();
+		if(preg_match("/Apache\/(.*)\(Win(.*)\)/", $_SERVER['SERVER_SOFTWARE'], $output_array)){
+			$content .='<div class="infobox infobox-large infobox-red clearfix">
+			<i class="fa fa-exclamation-triangle fa-4x pull-left"></i> <strong>'.$this->lang['windows_apache_hint'].'</strong>
+		</div>';
+		}
+
 		if(!$this->do_match_req()){
 			$content .='<div class="infobox infobox-large infobox-red clearfix">
 			<i class="fa fa-exclamation-triangle fa-4x pull-left"></i> <strong>'.$this->lang['phpcheck_failed'].'</strong>
 		</div>';
 		} else {
-			//Check for Apache on Windows System, because of ThreadStackSize
-			//https://eqdkp-plus.eu/wiki/Versionsaktualisierung#EQdkp_Plus_2.1_l.C3.A4uft_nicht_mehr_auf_Windows-Servern
-			$output_array = array();
-			if(preg_match("/Apache\/(.*)\(Win(.*)\)/", $_SERVER['SERVER_SOFTWARE'], $output_array)){
-				$content .='<div class="infobox infobox-large infobox-red clearfix">
-			<i class="fa fa-exclamation-triangle fa-4x pull-left"></i> <strong>'.$this->lang['windows_apache_hint'].'</strong>
-		</div>';
-			}
-			
-			
-			// show a message if safemode is on, as we can install eqdkp+ with ftp handler
-			if(!$phpcheckdata['safemode']['passfail']){
-				$content .='<div style="margin-top: 10px; padding: 0pt 0.7em;" class="ui-state-highlight ui-corner-all">
-						<p>'.$this->lang['safemode_warning'].'</p>
-					</div>';
-			}
-	
 			// show a warning if one of the optional steps does not match
 			if($this->do_match_opt()){
 				$content .='<div class="infobox infobox-large infobox-orange clearfix">
@@ -198,7 +223,7 @@ class php_check extends step_generic {
 			$content .= '<tr>
 				<td>'.(($this->lang['module_'.$fname]) ? $this->lang['module_'.$fname] : $fname).'</td>
 				<td class="'.$passfail_color.'">'.$fdata['installed'].'</td>
-				<td class="positive">'.((isset($fdata['recommended'])) ? $fdata['recommended'] : $fdata['required']).'</td>		
+				<td class="positive">'.((isset($fdata['recommended'])) ? $fdata['recommended'] : $fdata['required']).'</td>
 				<td class="positive">'.$fdata['required'].'</td>
 				<td><i class="fa '.$passfail_icon.' fa-2x '.$passfail_color.'"></i></td>
 			</tr>';
@@ -212,18 +237,18 @@ class php_check extends step_generic {
 		}else{
 			$this->pdl->log('install_error', $this->lang['phpcheck_failed']);
 		}
-		
+
 		//JavaScript check pathinfo
-		$content .= '<script>$(document).ready(function(){
+		$content .= '<script>$(function(){
 			$.get( "index.php/pathinfotest", function( data ) {
 				if($.trim(data) != "/pathinfotest"){
 					pathinfotest_failed();
 				}
-			
+
 			}).fail(function() {
 			    pathinfotest_failed();
 			});
-		
+
 			function pathinfotest_failed(){
 				var myFirstColumn = $(".colorswitch tr:last td:nth-child(2)");
 				var myLastColum = $(".colorswitch tr:last td:nth-child(5)");

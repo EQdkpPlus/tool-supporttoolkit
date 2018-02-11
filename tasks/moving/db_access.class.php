@@ -124,12 +124,10 @@ class db_access extends step_generic {
 	}
 
 	private function configfile_fill() {
-		$content = substr(file_get_contents($this->root_path.'config.php'), 0, -2); //discard last two symbols (? >)
-		$content = preg_replace('/^\$(dbtype) = \'(.*)\';$/m', "{{INSERT}}", $content);
-		
-		$content = preg_replace('/^\$(dbtype|dbhost|dbname|dbuser|dbpass) = \'(.*)\';$/m', "", $content);
+		$content = file_get_contents($this->root_path.'config.php');		
+		$content = preg_replace('/\$(dbtype) = \'(.*)\';/m', "{{INSERT}}", $content);
+		$content = preg_replace('/\$(dbtype|dbhost|dbname|dbuser|dbpass) = \'(.*)\';/m', "", $content);
 		$content = preg_replace('/\\n{3,}/', "\n\n", $content);
-		
 		
 		$c = '$dbtype = \''.$this->dbtype.'\';'."\n";
 		$c .= '$dbhost = \''.$this->dbhost.'\';'."\n";
@@ -137,8 +135,7 @@ class db_access extends step_generic {
 		$c .= '$dbuser = \''.$this->dbuser.'\';'."\n";
 		$c .= '$dbpass = \''.$this->dbpass.'\';';
 		$content = str_replace("{{INSERT}}", $c, $content);
-		
-		$content .= '?>';
+
 		$this->pfh->putContent($this->root_path.'config.php', $content);
 	}
 }
