@@ -33,43 +33,78 @@ class backup extends step_generic {
 
 	public function get_output() {
 		$dataFolder = $this->root_path.'data';
-		$arrFolders = scandir($dataFolder);
+		$files = $backups = $full = array();
 		
-		$files = $backups = array();
-		foreach($arrFolders as $dataFolder){
-			$files = array();
-			$file = $this->root_path.'data/'.$dataFolder;
-			if (is_dir($file) && $file != "." && $file != ".." && $file != "index.html" && $file != ".htaccess"){
-				//Read out all of our backups
-				$path = $file.'/eqdkp/backup/';
-				if($dir=opendir($path)){
-					while($file=readdir($dir)){
-						if (!is_dir($file) && $file != "." && $file != ".." && $file != "index.html" && $file != ".htaccess"){
-							$files[$file]=$file;
+		if(defined('INSTALLED_VERSION')){
+			//Read out all of our backups
+			$path = $dataFolder.'/eqdkp/backup/';
+			if($dir=opendir($path)){
+				while($file=readdir($dir)){
+					if (!is_dir($file) && $file != "." && $file != ".." && $file != "index.html" && $file != ".htaccess"){
+						$files[$file]=$file;
+					}
+				}
+				closedir($dir);
+			}
+			
+			//Generate backup-array, only list eqdkp-backups
+			foreach ($files as $elem){
+				$matches = array();
+				
+				if (preg_match('#^eqdkp-backup_([0-9]{10})_([0-9a-zA-Z]{1,32})\.(sql|zip?)$#', $elem, $matches)){
+					$backups[$path.$elem] = $matches[1];
+				}
+				if (preg_match('#^eqdkp-fbackup_([0-9]{10})_([0-9a-zA-Z]{1,32})\.(sql|zip?)$#', $elem, $matches)){
+					$backups[$path.$elem] = $matches[1];
+					$full[] = $elem;
+					
+				}
+				
+			}
+			if (isset($backups) && is_array($backups)){
+				//Sort the arrays the get the newest ones on top
+				array_multisort($backups, SORT_DESC);
+			}
+			
+		} else {
+			$arrFolders = scandir($dataFolder);
+			foreach($arrFolders as $dataFolder){
+				$files = array();
+				$file = $this->root_path.'data/'.$dataFolder;
+				if (is_dir($file) && $file != "." && $file != ".." && $file != "index.html" && $file != ".htaccess"){
+					//Read out all of our backups
+					$path = $file.'/eqdkp/backup/';
+					if($dir=opendir($path)){
+						while($file=readdir($dir)){
+							if (!is_dir($file) && $file != "." && $file != ".." && $file != "index.html" && $file != ".htaccess"){
+								$files[$file]=$file;
+							}
 						}
+						closedir($dir);
 					}
-					closedir($dir);
-				}
+					
+					//Generate backup-array, only list eqdkp-backups
+					foreach ($files as $elem){
+						$matches = array();
 						
-				//Generate backup-array, only list eqdkp-backups
-				foreach ($files as $elem){
-					if (preg_match('#^eqdkp-backup_([0-9]{10})_([0-9a-zA-Z]{1,32})\.(sql|zip?)$#', $elem, $matches)){
-						$backups[$path.$elem] = $matches[1];
+						if (preg_match('#^eqdkp-backup_([0-9]{10})_([0-9a-zA-Z]{1,32})\.(sql|zip?)$#', $elem, $matches)){
+							$backups[$path.$elem] = $matches[1];
+						}
+						if (preg_match('#^eqdkp-fbackup_([0-9]{10})_([0-9a-zA-Z]{1,32})\.(sql|zip?)$#', $elem, $matches)){
+							$backups[$path.$elem] = $matches[1];
+							$full[] = $elem;
+							
+						}
+						
 					}
-					if (preg_match('#^eqdkp-fbackup_([0-9]{10})_([0-9a-zA-Z]{1,32})\.(sql|zip?)$#', $elem, $matches)){
-						$backups[$path.$elem] = $matches[1];
-						$full[] = $elem;
-
+					if (isset($backups) && is_array($backups)){
+						//Sort the arrays the get the newest ones on top
+						array_multisort($backups, SORT_DESC);
 					}
-
+					
+					
+					
 				}
-				if (isset($backups) && is_array($backups)){
-					//Sort the arrays the get the newest ones on top
-					array_multisort($backups, SORT_DESC);
-				}
-				
-				
-				
 			}
 		}
 
@@ -83,6 +118,7 @@ class backup extends step_generic {
 		<div><div style="float:left;"><select size="10" name="backups" onchange="show_metadata(this.value)">';
 		
 		if (isset($backups) && is_array($backups)){
+			$metadata = array();
 			foreach ($backups as $key=>$elem){
 				$metaFolder = str_replace("/eqdkp/backup/", "/eqdkp/backup/meta/", $key);
 				$metaFolder = str_replace(array(pathinfo($key, PATHINFO_FILENAME), '.'.pathinfo($key, PATHINFO_EXTENSION)), "", $metaFolder);
@@ -149,6 +185,7 @@ class backup extends step_generic {
 		if(strlen($this->in->get('backups'))){
 			$file = $this->in->get('backups');
 			$file_name = pathinfo($file, PATHINFO_FILENAME).'.'.pathinfo($file, PATHINFO_EXTENSION);			
+			$matches = array();
 			
 			if (preg_match('#^eqdkp-backup_([0-9]{10})_([0-9a-zA-Z]{1,32})\.(sql|zip?)$#', $file_name, $matches) || preg_match('#^eqdkp-fbackup_([0-9]{10})_([0-9a-zA-Z]{1,32})\.(sql|zip?)$#', $file_name, $matches)){
 				switch ($matches[3])
