@@ -33,10 +33,11 @@ class db_access extends step_generic {
 	}
 
 	//default settings
-	private $dbtype			= 'mysqli';
+	private $dbtype			= 'mysql_pdo';
 	private $dbhost			= 'localhost';
 	private $dbname			= '';
 	private $dbuser			= '';
+	private $dbport			= 3306;
 
 	public function get_output() {
 		$content = '
@@ -58,15 +59,19 @@ class db_access extends step_generic {
 			</tr>
 			<tr>
 				<td align="right"><strong>'.$this->lang['dbhost'].': </strong></td>
-				<td><input type="text" name="dbhost" size="25" value="'.$this->dbhost.'" class="input" /></td>
+				<td><input type="text" name="dbhost" size="25" value="'.$this->dbhost.'" class="input" required/></td>
+			</tr>
+			<tr>
+				<td align="right"><strong>'.$this->lang['dbport'].': </strong></td>
+				<td><input type="text" name="dbport" size="25" value="'.$this->dbport.'" class="input" required/></td>
 			</tr>
 			<tr>
 				<td align="right"><strong>'.$this->lang['dbname'].': </strong></td>
-				<td><input type="text" name="dbname" size="25" value="'.$this->dbname.'" class="input" /></td>
+				<td><input type="text" name="dbname" size="25" value="'.$this->dbname.'" class="input" required/></td>
 			</tr>
 			<tr>
 				<td align="right"><strong>'.$this->lang['dbuser'].': </strong></td>
-				<td><input type="text" name="dbuser" size="25" value="'.$this->dbuser.'" class="input" /></td>
+				<td><input type="text" name="dbuser" size="25" value="'.$this->dbuser.'" class="input" required/></td>
 			</tr>
 			<tr>
 				<td align="right"><strong>'.$this->lang['dbpass'].': </strong></td>
@@ -80,6 +85,7 @@ class db_access extends step_generic {
 		$this->dbhost = registry::get_const('dbhost');
 		$this->dbname = registry::get_const('dbname');
 		$this->dbuser = registry::get_const('dbuser');
+		$this->dbport = registry::get_const('dbport');
 		return $this->get_output();
 	}
 
@@ -88,6 +94,7 @@ class db_access extends step_generic {
 		$this->dbhost		= $this->in->get('dbhost', $this->dbhost);
 		$this->dbname		= $this->in->get('dbname');
 		$this->dbuser		= $this->in->get('dbuser');
+		$this->dbport		= $this->in->get('dbport', 3306);
 		$this->dbpass		= $this->in->get('dbpass', '', 'raw');
 
 		// Check database name
@@ -127,10 +134,13 @@ class db_access extends step_generic {
 		$content = file_get_contents($this->root_path.'config.php');		
 		$content = preg_replace('/\$(dbtype) = \'(.*)\';/m', "{{INSERT}}", $content);
 		$content = preg_replace('/\$(dbtype|dbhost|dbname|dbuser|dbpass) = \'(.*)\';/m', "", $content);
+		$content = preg_replace('/\$(dbport) = (.*);/m', "", $content);
+		
 		$content = preg_replace('/\\n{3,}/', "\n\n", $content);
 		
 		$c = '$dbtype = \''.$this->dbtype.'\';'."\n";
 		$c .= '$dbhost = \''.$this->dbhost.'\';'."\n";
+		$c .= '$dbport = '.intval($this->dbport).';'."\n";
 		$c .= '$dbname = \''.$this->dbname.'\';'."\n";
 		$c .= '$dbuser = \''.$this->dbuser.'\';'."\n";
 		$c .= '$dbpass = \''.$this->dbpass.'\';';

@@ -104,6 +104,7 @@ $lang = array(
 	'dbname'				=> 'Datenbankname',
 	'dbuser'				=> 'Datenbank Benutzername',
 	'dbpass'				=> 'Datenbank Passwort',
+	"dbport" 				=> 'Datenbank Port',
 	'table_prefix'			=> 'Präfix für die EQdkp Tabellen',
 	'test_db'				=> 'Datenbank testen',
 	'prefix_error'			=> 'Kein oder ungültiges Datenbank Präfix angegeben! Bitte gib ein gültiges Präfix an.',

@@ -114,6 +114,7 @@ $lang = array(
 	"dbname" => 'Database name',
 	"dbuser" => 'Database username',
 	"dbpass" => 'Database password',
+	"dbport" => 'Database port',
 	"table_prefix" => 'Prefix for EQDKP-Plus tables',
 	"test_db" => 'Test database',
 	"prefix_error" => 'No or invalid database prefix specified! Please enter a valid prefix.',
